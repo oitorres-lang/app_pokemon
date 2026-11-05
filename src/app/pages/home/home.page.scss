@@ -1,0 +1,147 @@
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+
+  .brand-icon {
+    font-size: 1.4rem;
+    color: #ffcb05;
+  }
+}
+
+.custom-searchbar {
+  --background: rgba(255, 255, 255, 0.18);
+  --color: #ffffff;
+  --placeholder-color: rgba(255, 255, 255, 0.7);
+  --icon-color: rgba(255, 255, 255, 0.85);
+  --clear-button-color: #ffffff;
+  --border-radius: 12px;
+  padding-top: 0;
+  padding-bottom: 6px;
+}
+
+.home-content {
+  --background: #f7f9fc;
+}
+
+.pokemon-list {
+  background: transparent;
+  padding: 8px 12px;
+}
+
+.pokemon-item {
+  --background: #ffffff;
+  --border-radius: 14px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .pokemon-thumbnail {
+    --size: 64px;
+    background: radial-gradient(circle, #f0f4f8 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+
+    img {
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    }
+  }
+
+  .pokemon-label {
+    margin-left: 12px;
+
+    .pokemon-id-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .pokemon-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 2px 0;
+    }
+
+    .pokemon-hint {
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+  }
+
+  .chevron-icon {
+    color: #cbd5e1;
+    font-size: 1.2rem;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px 10px;
+
+  .loading-text {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+}
+
+.error-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  min-height: 50vh;
+
+  .error-icon,
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+  }
+
+  .empty-icon {
+    color: #94a3b8;
+  }
+
+  h3 {
+    margin: 8px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 20px;
+    max-width: 300px;
+  }
+}
+

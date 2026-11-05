@@ -1,0 +1,165 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar [style.--background]="primaryColor" class="detail-toolbar">
+    <ion-buttons slot="start">
+      <!-- Botón de retorno obligatorio según requisitos -->
+      <ion-back-button defaultHref="/home" text="Atrás" icon="arrow-back-outline" color="light"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title color="light" class="detail-title">
+      @if (pokemon) { {{ formattedId }} {{ pokemon.name | titlecase }} } @else { Detalle del Pokémon }
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="detail-content">
+  <!-- Estado de Carga -->
+  @if (isLoading) {
+  <div class="loading-state">
+    <ion-spinner name="crescent" [style.color]="primaryColor"></ion-spinner>
+    <p>Cargando información del Pokémon...</p>
+  </div>
+  }
+
+  <!-- Estado de Error -->
+  @if (!isLoading && errorMessage) {
+  <div class="error-state">
+    <ion-icon name="alert-circle-outline" color="danger" class="error-icon"></ion-icon>
+    <h3>Error</h3>
+    <p>{{ errorMessage }}</p>
+    <ion-button fill="solid" color="primary" (click)="retry()">
+      <ion-icon slot="start" name="refresh-outline"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
+  }
+
+  <!-- Información Completa del Pokémon -->
+  @if (!isLoading && pokemon) {
+  <!-- Hero Header con gradiente y la imagen oficial grande -->
+  <div class="hero-container" [style.background]="'linear-gradient(180deg, ' + primaryColor + ' 0%, #ffffff 100%)'">
+    <div class="hero-content">
+      <div class="id-badge-large">{{ formattedId }}</div>
+      <h1 class="pokemon-name-hero">{{ pokemon.name | titlecase }}</h1>
+
+      <!-- Tipos del Pokémon con Badges interactivos -->
+      <div class="types-container">
+        @for (type of formattedTypes; track type.name) {
+        <ion-badge class="type-badge" [style.background-color]="type.color" [style.color]="type.textColor">
+          {{ type.displayName }}
+        </ion-badge>
+        }
+      </div>
+
+      <!-- Imagen Oficial Grande (official-artwork) -->
+      <div class="artwork-wrapper">
+        <img
+          [src]="artworkUrl"
+          [alt]="pokemon.name"
+          class="official-artwork"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          (error)="onArtworkError($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="details-body">
+    <!-- Tarjeta 1: Características Físicas (Altura y Peso convertidos) -->
+    <ion-card class="info-card">
+      <ion-card-header>
+        <ion-card-subtitle>Medidas Físicas</ion-card-subtitle>
+        <ion-card-title>Altura y Peso</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-grid>
+          <ion-row class="ion-align-items-center ion-text-center">
+            <!-- Altura en Metros -->
+            <ion-col size="6" class="metric-column border-right">
+              <div class="metric-icon-box">
+                <ion-icon name="resize-outline" color="primary"></ion-icon>
+              </div>
+              <div class="metric-value">{{ heightInMeters }} m</div>
+              <div class="metric-label">Altura</div>
+              <small class="metric-original">({{ pokemon.height }} dm)</small>
+            </ion-col>
+
+            <!-- Peso en Kilogramos -->
+            <ion-col size="6" class="metric-column">
+              <div class="metric-icon-box">
+                <ion-icon name="scale-outline" color="secondary"></ion-icon>
+              </div>
+              <div class="metric-value">{{ weightInKg }} kg</div>
+              <div class="metric-label">Peso</div>
+              <small class="metric-original">({{ pokemon.weight }} hg)</small>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tarjeta 2: Estadísticas Base con ion-progress-bar -->
+    <ion-card class="info-card">
+      <ion-card-header>
+        <ion-card-subtitle>Combate</ion-card-subtitle>
+        <ion-card-title>Estadísticas Base</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="stats-list">
+          @for (stat of formattedStats; track stat.name) {
+          <div class="stat-row">
+            <div class="stat-header">
+              <span class="stat-name">{{ stat.displayName }}</span>
+              <span class="stat-value" [style.color]="stat.color">
+                {{ stat.value }} <small class="stat-max">/ 255</small>
+              </span>
+            </div>
+            <!-- Barra de progreso nativa de Ionic -->
+            <ion-progress-bar
+              [value]="stat.percentage"
+              [style.--progress-background]="stat.color"
+              class="custom-progress-bar"
+            ></ion-progress-bar>
+          </div>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tarjeta 3: Habilidades Especiales -->
+    @if (pokemon.abilities && pokemon.abilities.length > 0) {
+    <ion-card class="info-card">
+      <ion-card-header>
+        <ion-card-subtitle>Capacidades</ion-card-subtitle>
+        <ion-card-title>Habilidades</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="abilities-container">
+          @for (ab of pokemon.abilities; track ab.slot) {
+          <ion-chip [color]="ab.is_hidden ? 'warning' : 'primary'" class="ability-chip">
+            <ion-icon name="sparkles-outline"></ion-icon>
+            <ion-label>
+              {{ ab.ability.name | titlecase }} @if (ab.is_hidden) {
+              <small> (Oculta)</small>
+              }
+            </ion-label>
+          </ion-chip>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+    }
+
+    <!-- Botón Flotante/Inferior para Volver -->
+    <div class="back-action-container ion-padding">
+      <ion-button expand="block" fill="outline" color="dark" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Volver a la Pokédex
+      </ion-button>
+    </div>
+  </div>
+  }
+</ion-content>

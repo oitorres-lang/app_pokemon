@@ -1,0 +1,104 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <div class="toolbar-brand">
+        <ion-icon name="flash-outline" class="brand-icon"></ion-icon>
+        <span>Pokédex</span>
+      </div>
+    </ion-title>
+    <ion-badge slot="end" color="light" class="ion-margin-end"> {{ filteredPokemonList.length }} / 25 </ion-badge>
+  </ion-toolbar>
+
+  <!-- Barra de búsqueda interactiva -->
+  <ion-toolbar color="primary">
+    <ion-searchbar
+      [debounce]="150"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar entre los 25 Pokémon..."
+      show-clear-button="focus"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="home-content">
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="refresh-outline"
+      pullingText="Desliza para actualizar..."
+      refreshingSpinner="crescent"
+      refreshingText="Consultando PokéAPI..."
+    ></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Estado de Carga Inicial (Skeletons) -->
+  @if (isLoading) {
+  <div class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p class="loading-text">Cargando los 25 Pokémon...</p>
+  </div>
+  <ion-list lines="inset" class="pokemon-list">
+    @for (item of skeletonArray; track $index) {
+    <ion-item class="pokemon-item skeleton-item">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <h3><ion-skeleton-text [animated]="true" style="width: 30%"></ion-skeleton-text></h3>
+        <p><ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text></p>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  }
+
+  <!-- Estado de Error -->
+  @if (!isLoading && errorMessage) {
+  <div class="error-container">
+    <ion-icon name="alert-circle-outline" color="danger" class="error-icon"></ion-icon>
+    <h3>Error de conexión</h3>
+    <p>{{ errorMessage }}</p>
+    <ion-button fill="solid" color="primary" (click)="loadPokemonList(true)">
+      <ion-icon slot="start" name="refresh-outline"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
+  }
+
+  <!-- Listado de los 25 Pokémon (Componentes Nativos de Ionic) -->
+  @if (!isLoading && !errorMessage) { @if (filteredPokemonList.length > 0) {
+  <ion-list lines="inset" class="pokemon-list">
+    @for (pokemon of filteredPokemonList; track pokemon.id) {
+    <ion-item button detail="true" (click)="goToDetail(pokemon.id)" class="pokemon-item">
+      <!-- Thumbnail optimizado para carga instantánea -->
+      <ion-thumbnail slot="start" class="pokemon-thumbnail">
+        <img
+          [src]="pokemon.thumbnailUrl"
+          [alt]="pokemon.name"
+          loading="eager"
+          decoding="async"
+          (error)="onImageError($event, pokemon.id)"
+        />
+      </ion-thumbnail>
+
+      <!-- Label con número de ID y nombre formateado -->
+      <ion-label class="pokemon-label">
+        <span class="pokemon-id-tag">{{ pokemon.formattedId }}</span>
+        <h2 class="pokemon-name">{{ pokemon.name | titlecase }}</h2>
+        <p class="pokemon-hint">Toca para ver estadísticas</p>
+      </ion-label>
+
+      <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+    </ion-item>
+    }
+  </ion-list>
+  } @else {
+  <!-- Búsqueda sin resultados -->
+  <div class="empty-container">
+    <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+    <h3>Sin coincidencias</h3>
+    <p>No se encontraron Pokémon con el término "{{ searchTerm }}"</p>
+  </div>
+  } }
+</ion-content>
