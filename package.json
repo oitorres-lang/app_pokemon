@@ -7,7 +7,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:ghpages": "ng build --base-href /app-pokemon/",
+    "build:ghpages": "ng build --base-href /app_pokemon/",
     "deploy": "npm run build:ghpages && angular-cli-ghpages --dir=www",
     "watch": "ng build --watch --configuration development",
     "lint": "npm run eslint && npm run typecheck:e2e && npm run prettier -- --check",
