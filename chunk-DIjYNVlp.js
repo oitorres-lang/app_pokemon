@@ -1,0 +1,1 @@
+import{Ct as at,St as J}from"./main-SQQ6V2IM.js";export{at as createGesture};
